@@ -6,7 +6,7 @@ gender_choice = [(0, "Male"), (1, 'Female')]
 # Create your models here.
 
 
-class Years(models.Model):
+class Year(models.Model):
     year = models.IntegerField(unique=True)
     add_date = models.DateTimeField(auto_now=True)
 
@@ -15,23 +15,27 @@ class Movie_Category(models.Model):
     name = models.CharField(max_length=100)
     add_date = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
 
-class Qualities(models.Model):
+
+class Qualitie(models.Model):
     title = models.CharField(max_length=20)
     add_date = models.DateTimeField(auto_now=True)
 
-
-class Subtitle(models.Model):
-    language = models.CharField(max_length=5)
-    sub_file = models.CharField(max_length=50)
+    def __str__(self):
+        return self.title
 
 
-class Genres(models.Model):
+class Genre(models.Model):
     name = models.CharField(max_length=30)
     add_date = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
 
-class Actors(models.Model):
+
+class Actor(models.Model):
     name = models.CharField(max_length=50)
     birthday = models.DateField(blank=True)
     gender = models.CharField(max_length=10, choices=gender_choice, default=0)
@@ -41,34 +45,42 @@ class Actors(models.Model):
     tmdb_id = models.IntegerField(blank=True)
     imdb_id = models.CharField(max_length=10, blank=True)
 
+    def __str__(self):
+        return self.name
 
-class Trailers(models.Model):
+
+class Trailer(models.Model):
     key = models.CharField(max_length=15)
     name = models.CharField(max_length=50)
     site = models.CharField(max_length=15)
     trailer_type = models.CharField(max_length=20)
 
+    def __str__(self):
+        return self.name
 
-class Collections(models.Model):
+
+class Collection(models.Model):
     tmdb_id = models.IntegerField()
     name = models.CharField(max_length=250)
     poster = models.ImageField(upload_to='collections/%Y/%m/%d/', blank=True)
     backdrop = models.ImageField(upload_to='collections/%Y/%m/%d/', blank=True)
 
+    def __str__(self):
+        return self.name
 
-class Movies(models.Model):
+
+class Movie(models.Model):
     title = models.CharField(max_length=300)
-    year = models.ForeignKey(Years, on_delete=models.SET_NULL, null=True)
+    year = models.ForeignKey(Year, on_delete=models.SET_NULL, null=True)
     catagory = models.ForeignKey(
         Movie_Category, null=True, on_delete=models.SET_NULL)
     quality = models.ForeignKey(
-        Qualities, null=True, on_delete=models.SET_NULL)
-    subtitle = models.ForeignKey(
-        Subtitle, null=True, on_delete=models.SET_NULL)
+        Qualitie, null=True, on_delete=models.SET_NULL)
     tagline = models.CharField(max_length=600, blank=True)
     overview = models.TextField(blank=True)
     file_path = models.CharField(max_length=500)
     file_size = models.DecimalField(max_digits=3, decimal_places=1, blank=True)
+    subtitle = models.CharField(max_length=50, blank=True)
     poster = models.ImageField(upload_to='movies/%Y/%m/%d/')
     backdrop = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
     img_1 = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
@@ -82,7 +94,10 @@ class Movies(models.Model):
     is_pub = models.BooleanField(default=True)
     add_date = models.DateTimeField(default=datetime.now)
     # Those are many to many relation
-    genres = models.ManyToManyField(Genres)
-    collections = models.ManyToManyField(Collections)
-    actors = models.ManyToManyField(Actors)
-    trailers = models.ManyToManyField(Trailers)
+    genres = models.ManyToManyField(Genre)
+    collections = models.ManyToManyField(Collection)
+    actors = models.ManyToManyField(Actor)
+    trailers = models.ManyToManyField(Trailer)
+
+    def __str__(self):
+        return self.title
