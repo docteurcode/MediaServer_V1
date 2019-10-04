@@ -41,9 +41,10 @@ class Actor(models.Model):
     gender = models.CharField(max_length=10, choices=gender_choice, default=0)
     place_of_birth = models.CharField(max_length=100, blank=True)
     biography = models.TextField(blank=True)
-    profile_pic = models.ImageField('actors/%Y/%m/%d/', blank=True)
+    profile_pic = models.ImageField(upload_to='actors/%Y/%m/%d/', blank=True)
     tmdb_id = models.IntegerField(blank=True)
     imdb_id = models.CharField(max_length=10, blank=True)
+    add_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
