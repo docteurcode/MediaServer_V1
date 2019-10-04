@@ -1,0 +1,23 @@
+id integer
+  cat_id integer [ref: > categories.id]
+  qulity_id integer [ref: > qualities.id]
+  title varchar(300)
+  year_id integer [ref: > years.id]
+  overview longtext
+  tagline mediumtext
+  poster_path text
+  backdrop_path text
+  file_path text
+  file_size decimal
+  views integer
+  image_1 mediumtext
+  image_2 mediumtext
+  image_3 mediumtext
+  image_4 mediumtext
+  tmdb_id integer
+  imdb_id varchar(30)
+  vote_average float1
+  vote_count integer
+  release_date datetime
+  is_pub boolean
+  movie_date datetime

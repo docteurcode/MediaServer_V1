@@ -6,9 +6,11 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 autopep8 = "*"
+rope = "*"
 
 [packages]
 django = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"
