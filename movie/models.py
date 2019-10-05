@@ -76,7 +76,7 @@ class Movie(models.Model):
     catagory = models.ForeignKey(
         Movie_Category, null=True, on_delete=models.SET_NULL)
     quality = models.ForeignKey(
-        Qualitie, null=True, on_delete=models.SET_NULL)
+        Qualitie, blank=True, null=True, on_delete=models.SET_NULL)
     tagline = models.CharField(max_length=600, blank=True)
     overview = models.TextField(blank=True)
     file_path = models.CharField(max_length=500)
@@ -95,10 +95,10 @@ class Movie(models.Model):
     is_pub = models.BooleanField(default=True)
     add_date = models.DateTimeField(default=datetime.now)
     # Those are many to many relation
-    genres = models.ManyToManyField(Genre)
-    collections = models.ManyToManyField(Collection)
-    actors = models.ManyToManyField(Actor)
-    trailers = models.ManyToManyField(Trailer)
+    genres = models.ManyToManyField(Genre,  blank=True)
+    collections = models.ManyToManyField(Collection,  blank=True)
+    actors = models.ManyToManyField(Actor,  blank=True)
+    trailers = models.ManyToManyField(Trailer,  blank=True)
 
     def __str__(self):
         return self.title
