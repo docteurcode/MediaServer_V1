@@ -1,0 +1,10 @@
+{
+    "api_key": "c5f91272e8db79e3deb27701f18d2894",
+    "project_dir": "D:/Python/Project/Django/MediaServer_V1",
+    "renamed_tv_paths": [
+        "D:/Python/Project/Auto Movie V2/Renamed/TV"
+    ],
+    "renamed_movie_paths": [
+        "D:/Python/Project/Auto Movie V2/Renamed/Movies"
+    ]
+}

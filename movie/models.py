@@ -10,6 +10,9 @@ class Year(models.Model):
     year = models.IntegerField(unique=True)
     add_date = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return str(self.year)
+
 
 class Movie_Category(models.Model):
     name = models.CharField(max_length=100)
@@ -80,7 +83,7 @@ class Movie(models.Model):
     tagline = models.CharField(max_length=600, blank=True)
     overview = models.TextField(blank=True)
     file_path = models.CharField(max_length=500)
-    file_size = models.DecimalField(max_digits=3, decimal_places=1, blank=True)
+    file_size = models.DecimalField(max_digits=3, decimal_places=2, blank=True)
     subtitle = models.CharField(max_length=50, blank=True)
     poster = models.ImageField(upload_to='movies/%Y/%m/%d/')
     backdrop = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
@@ -91,7 +94,7 @@ class Movie(models.Model):
     tmdb_id = models.IntegerField(blank=True)
     imdb_id = models.CharField(max_length=10, blank=True)
     release_date = models.DateField(blank=True)
-    views = models.IntegerField()
+    views = models.IntegerField(default=0)
     is_pub = models.BooleanField(default=True)
     add_date = models.DateTimeField(default=datetime.now)
     # Those are many to many relation
