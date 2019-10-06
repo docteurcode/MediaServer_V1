@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime
 from pathlib import Path
-from movie.models import Movie, Year
+from movie.models import Movie, Year, Movie_Category, Qualitie
 
 movies_path = base.conf_data['renamed_movie_paths']
 api_key = base.conf_data['api_key']
@@ -116,10 +116,40 @@ def add_movie():
                     tmdb_id = movie_info["id"]
                     imdb_id = movie_info["imdb_id"]
                     release_date = search_movie["results"][0]['release_date']
-                #     # add the movie to the database
-                #     add_movie = Movie(title=movie_title, year=movie_year,
-                #                       catagory=movie_cat, quality=qulity)
-                print(images)
+
+                    # Get the Year
+                    year_query = Year.objects.filter(year=movie_year)
+                    year = ''
+                    if(not year_query):
+                        year = Year(year=movie_year)
+                        year.save()
+                    else:
+                        year = year_query[0]
+
+                    # Get the Catagory
+                    cat_query = Movie_Category.objects.filter(name=movie_cat)
+                    cat = ''
+                    if(not cat_query):
+                        cat = Movie_Category(name=movie_cat)
+                        cat.save()
+                    else:
+                        cat = cat_query[0]
+
+                    # Get the Qulity
+                    qut_query = Qualitie.objects.filter(title=qulity)
+                    qut = ''
+                    if(not qut_query):
+                        qut = Qualitie(title=qulity)
+                        qut.save()
+                    else:
+                        qut = qut_query[0]
+
+                    # # add the movie to the database
+                    add_movie = Movie(title=title, year=year, catagory=cat, quality=qut,
+                                      tagline=tagline, overview=overview, file_path=video_file, file_size=file_size,
+                                      subtitle=sub_file, poster=poster, backdrop=backdrop,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, )
+                    # add_movie.save()
 
 
 add_movie()
+# img_1=img_1, img_2=img_2, img_3=img_3, img_4=img_4,

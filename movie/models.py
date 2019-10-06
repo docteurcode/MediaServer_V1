@@ -23,7 +23,7 @@ class Movie_Category(models.Model):
 
 
 class Qualitie(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=5)
     add_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -44,7 +44,8 @@ class Actor(models.Model):
     gender = models.CharField(max_length=10, choices=gender_choice, default=0)
     place_of_birth = models.CharField(max_length=100, blank=True)
     biography = models.TextField(blank=True)
-    profile_pic = models.ImageField(upload_to='actors/%Y/%m/%d/', blank=True)
+    profile_pic = models.ImageField(
+        upload_to='media/actors/%Y/%m/%d/', blank=True)
     tmdb_id = models.IntegerField(blank=True)
     imdb_id = models.CharField(max_length=10, blank=True)
     add_date = models.DateTimeField(auto_now=True)
@@ -66,8 +67,10 @@ class Trailer(models.Model):
 class Collection(models.Model):
     tmdb_id = models.IntegerField()
     name = models.CharField(max_length=250)
-    poster = models.ImageField(upload_to='collections/%Y/%m/%d/', blank=True)
-    backdrop = models.ImageField(upload_to='collections/%Y/%m/%d/', blank=True)
+    poster = models.ImageField(
+        upload_to='media/collections/%Y/%m/%d/', blank=True)
+    backdrop = models.ImageField(
+        upload_to='media/collections/%Y/%m/%d/', blank=True)
 
     def __str__(self):
         return self.name
@@ -85,12 +88,12 @@ class Movie(models.Model):
     file_path = models.CharField(max_length=500)
     file_size = models.DecimalField(max_digits=3, decimal_places=2, blank=True)
     subtitle = models.CharField(max_length=50, blank=True)
-    poster = models.ImageField(upload_to='movies/%Y/%m/%d/')
+    poster = models.ImageField(upload_to='media/movies/%Y/%m/%d/')
     backdrop = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
-    img_1 = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
-    img_2 = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
-    img_3 = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
-    img_4 = models.ImageField(upload_to='movies/%Y/%m/%d/', blank=True)
+    img_1 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
+    img_2 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
+    img_3 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
+    img_4 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
     tmdb_id = models.IntegerField(blank=True)
     imdb_id = models.CharField(max_length=10, blank=True)
     release_date = models.DateField(blank=True)
