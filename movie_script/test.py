@@ -1,5 +1,8 @@
-file_path = "D:/Python/Project/Auto Movie V2/Renamed/Movies/Hindi/2019/Student of the Year 2/Student.of.the.Year.2.2019.Movply.1080p__BluRay__.mp4"
-name = 'abir'
-x = name and name or ''
+import urllib.request
 
-print(x)
+url = "http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg"
+
+
+result = urllib.request.urlretrieve(
+    url, 'D:/Python/Project/Django/MediaServer_V1/movie_script/cat2.jpg')
+print()

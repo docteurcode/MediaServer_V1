@@ -5,6 +5,10 @@ from datetime import datetime
 from pathlib import Path
 from movie.models import Movie, Year, Movie_Category, Qualitie
 
+from urllib.request import urlopen
+from django.core.files import File
+from tempfile import NamedTemporaryFile
+
 movies_path = base.conf_data['renamed_movie_paths']
 api_key = base.conf_data['api_key']
 
@@ -71,7 +75,7 @@ def add_movie():
 
             # Check is this movie already added or not
             abl_movies = Movie.objects.filter(
-                title=movie_title, year__year=2019)
+                title=movie_title, year__year=movie_year)
 
             if(abl_movies):
                 movie = abl_movies[0]
@@ -104,15 +108,15 @@ def add_movie():
                     movie_info = requests.get(get_info).json()
                     images = requests.get(get_image).json()['backdrops']
 
-                    title = movie_info["title"]
+                    # title = movie_info["title"]
                     tagline = movie_info['tagline']
                     overview = movie_info['overview']
                     poster = movie_info['poster_path']
                     backdrop = movie_info['backdrop_path']
-                    img_1 = images[0] and images[0] or ''
-                    img_2 = images[1] and images[1] or ''
-                    img_3 = images[3] and images[3] or ''
-                    img_4 = images[4] and images[4] or ''
+                    # img_1 = images[0] and images[0] or ''
+                    # img_2 = images[1] and images[1] or ''
+                    # img_3 = images[3] and images[3] or ''
+                    # img_4 = images[4] and images[4] or ''
                     tmdb_id = movie_info["id"]
                     imdb_id = movie_info["imdb_id"]
                     release_date = search_movie["results"][0]['release_date']
@@ -144,11 +148,20 @@ def add_movie():
                     else:
                         qut = qut_query[0]
 
+                    # Phot Download
+                    img_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{poster}"
+                    img_temp = NamedTemporaryFile(delete=True)
+                    img_temp.write(urlopen(img_url).read())
+                    img_temp.flush()
+
                     # # add the movie to the database
-                    add_movie = Movie(title=title, year=year, catagory=cat, quality=qut,
+                    add_movie = Movie(title=movie_title, year=year, catagory=cat, quality=qut,
                                       tagline=tagline, overview=overview, file_path=video_file, file_size=file_size,
-                                      subtitle=sub_file, poster=poster, backdrop=backdrop,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, )
-                    # add_movie.save()
+                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, )
+                    add_movie.poster.save(
+                        f"{movie_title}.jpg", File(img_temp), save=True)
+                    add_movie.save()
+                    print(movie_title)
 
 
 add_movie()
