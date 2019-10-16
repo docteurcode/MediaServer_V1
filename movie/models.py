@@ -79,8 +79,12 @@ class Collection(models.Model):
         return self.name
 
 
+class Movie_cast_name(models.Model):
+    movie_id = models.ForeignKey(Movie, on_delete=models.SET_NULL, null=True)
+
 class Movie(models.Model):
     title = models.CharField(max_length=300)
+    imdb_title = models.CharField(max_length=300, blank=True)
     year = models.ForeignKey(Year, on_delete=models.SET_NULL, null=True)
     catagory = models.ForeignKey(
         Movie_Category, null=True, on_delete=models.SET_NULL)
@@ -92,7 +96,7 @@ class Movie(models.Model):
     file_size = models.DecimalField(max_digits=3, decimal_places=2, blank=True)
     subtitle = models.CharField(max_length=500, blank=True)
     poster = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
-    backdrop = models.ImageField(upload_to='movies/%Y/%m/%d/')
+    backdrop = models.ImageField(upload_to='media/movies/%Y/%m/%d/')
     img_1 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
     img_2 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
     img_3 = models.ImageField(upload_to='media/movies/%Y/%m/%d/', blank=True)
@@ -105,7 +109,8 @@ class Movie(models.Model):
     add_date = models.DateTimeField(default=datetime.now)
     # Those are many to many relation
     genres = models.ManyToManyField(Genre,  blank=True)
-    collections = models.ManyToManyField(Collection,  blank=True)
+    collections = models.ForeignKey(
+        Collection,  blank=True, null=True, on_delete=models.SET_NULL)
     actors = models.ManyToManyField(Actor,  blank=True)
     trailers = models.ManyToManyField(Trailer,  blank=True)
 

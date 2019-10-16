@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime
 from pathlib import Path
-from movie.models import Movie, Year, Movie_Category, Qualitie
+from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection
 
 from urllib.request import urlopen
 from django.core.files import File
@@ -28,6 +28,36 @@ def get_file(file_full_path, folder_path):
 
 def get_root_file(file_path):
     return str(file_path).split('Movies')[0]
+
+
+def get_tmp_image(image_url):
+    # Phot Download
+    img_temp = NamedTemporaryFile(delete=True)
+    img_temp.write(urlopen(image_url).read())
+    img_temp.flush()
+    return img_temp
+
+
+def create_collection(collection):
+    col = ''
+    if(collection):
+        collection_info = Collection.objects.filter(
+            tmdb_id=collection['id'])
+        if(not collection_info):
+            col = Collection(
+                tmdb_id=collection['id'], name=collection['name'])
+            col_poster_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{collection['poster_path']}"
+            col_poster = get_tmp_image(col_poster_url)
+            col_backdrop_url = f"https://image.tmdb.org/t/p/original{collection['backdrop_path']}"
+            col_backdrop = get_tmp_image(col_backdrop_url)
+            col.poster.save(f"{collection['name']}.jpg", File(
+                col_poster), save=True)
+            col.backdrop.save(f"{collection['name']}_backdrop.jpg", File(
+                col_backdrop), save=True)
+            col.save()
+        else:
+            col = collection_info[0]
+        return col
 
 
 def add_movie():
@@ -107,16 +137,23 @@ def add_movie():
                     get_image = f"https://api.themoviedb.org/3/movie/{tmdb_id}/images?api_key={api_key}"
                     movie_info = requests.get(get_info).json()
                     images = requests.get(get_image).json()['backdrops']
+                    genres = movie_info["genres"]
+                    collection = movie_info['belongs_to_collection']
 
-                    # title = movie_info["title"]
+                    title = movie_info["title"]
                     tagline = movie_info['tagline']
                     overview = movie_info['overview']
                     poster = movie_info['poster_path']
                     backdrop = movie_info['backdrop_path']
-                    # img_1 = images[0] and images[0] or ''
-                    # img_2 = images[1] and images[1] or ''
-                    # img_3 = images[3] and images[3] or ''
-                    # img_4 = images[4] and images[4] or ''
+                    # movie_images = []
+                    # for n in range(4):
+                    #     if (len(images) > n):
+                    #         movie_images.append(images[n])
+
+                    img_1 = images[0]['file_path'] if len(images) > 0 else ''
+                    img_2 = images[1]['file_path'] if len(images) > 1 else ''
+                    img_3 = images[3]['file_path'] if len(images) > 2 else ''
+                    img_4 = images[4]['file_path'] if len(images) > 3 else ''
                     tmdb_id = movie_info["id"]
                     imdb_id = movie_info["imdb_id"]
                     release_date = search_movie["results"][0]['release_date']
@@ -148,21 +185,60 @@ def add_movie():
                     else:
                         qut = qut_query[0]
 
-                    # Phot Download
-                    img_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{poster}"
-                    img_temp = NamedTemporaryFile(delete=True)
-                    img_temp.write(urlopen(img_url).read())
-                    img_temp.flush()
+                    # Get the Collections
+                    col = create_collection(collection)
+
+                    # # Phot Download
+                    # img_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{poster}"
+                    # img_temp = NamedTemporaryFile(delete=True)
+                    # img_temp.write(urlopen(img_url).read())
+                    # img_temp.flush()
 
                     # # add the movie to the database
-                    add_movie = Movie(title=movie_title, year=year, catagory=cat, quality=qut,
+                    add_movie = Movie(title=movie_title, imdb_title=title, year=year, catagory=cat, quality=qut,
                                       tagline=tagline, overview=overview, file_path=video_file, file_size=file_size,
-                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, )
-                    add_movie.poster.save(
-                        f"{movie_title}.jpg", File(img_temp), save=True)
-                    add_movie.save()
+                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, collections=col)
+
+                    if(poster):
+                        img_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{poster}"
+                        poster_image = get_tmp_image(img_url)
+                        add_movie.poster.save(
+                            f"{movie_title}.jpg", File(poster_image), save=True)
+
+                    if(backdrop):
+                        backdrop_img_url = f"https://image.tmdb.org/t/p/original/{backdrop}"
+                        backdrop_img = get_tmp_image(backdrop_img_url)
+                        add_movie.backdrop.save(
+                            f"{movie_title}_backdrop.jpg", File(backdrop_img), save=True)
+
+                    if(img_1):
+                        img_1_url = f"https://image.tmdb.org/t/p/original/{img_1}"
+                        img = get_tmp_image(img_1_url)
+                        add_movie.img_1.save(
+                            f"{movie_title}_backdrop.jpg", File(img), save=True)
+                    if(img_2):
+                        img_2_url = f"https://image.tmdb.org/t/p/original/{img_2}"
+                        img = get_tmp_image(img_2_url)
+                        add_movie.img_2.save(
+                            f"{movie_title}_backdrop.jpg", File(img), save=True)
+                    if(img_3):
+                        img_3_url = f"https://image.tmdb.org/t/p/original/{img_3}"
+                        img = get_tmp_image(img_3_url)
+                        add_movie.img_3.save(
+                            f"{movie_title}_backdrop.jpg", File(img), save=True)
+                    if(img_4):
+                        img_4_url = f"https://image.tmdb.org/t/p/original/{img_4}"
+                        img = get_tmp_image(img_4_url)
+                        add_movie.img_4.save(
+                            f"{movie_title}_backdrop.jpg", File(img), save=True)
+
+                    if(genres):
+                        for genra in genres:
+                            get_genres = Genre.objects.get(id=genra['id'])
+                            add_movie.genres.add(get_genres)
+
+                    # add_movie.save()
                     print(movie_title)
 
 
 add_movie()
-# img_1=img_1, img_2=img_2, img_3=img_3, img_4=img_4,
