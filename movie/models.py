@@ -43,10 +43,10 @@ class Genre(models.Model):
 
 class Actor(models.Model):
     name = models.CharField(max_length=300)
-    birthday = models.DateField(blank=True)
+    birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=50, choices=gender_choice, default=0)
     place_of_birth = models.CharField(max_length=300, blank=True)
-    biography = models.TextField(blank=True)
+    biography = models.TextField(blank=True, null=True)
     profile_pic = models.ImageField(
         upload_to='media/actors/%Y/%m/%d/', blank=True)
     tmdb_id = models.IntegerField(blank=True)
@@ -78,9 +78,6 @@ class Collection(models.Model):
     def __str__(self):
         return self.name
 
-
-class Movie_cast_name(models.Model):
-    movie_id = models.ForeignKey(Movie, on_delete=models.SET_NULL, null=True)
 
 class Movie(models.Model):
     title = models.CharField(max_length=300)
@@ -116,3 +113,10 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Movie_actor_name(models.Model):
+    movie_id = models.ForeignKey(Movie, on_delete=models.SET_NULL, null=True)
+    actor_id = models.ForeignKey(Actor, on_delete=models.SET_NULL, null=True)
+    character = models.CharField(max_length=250)
+    cast_id = models.IntegerField(blank=True, null=True)

@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime
 from pathlib import Path
-from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection
+from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection, Actor
 
 from urllib.request import urlopen
 from django.core.files import File
@@ -58,6 +58,41 @@ def create_collection(collection):
         else:
             col = collection_info[0]
         return col
+
+
+def actors(movie_id):
+    list_of_actors = []
+    actor_api_url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={api_key}"
+    actors = requests.get(actor_api_url).json()
+    cast = ''
+    if(actors['cast']):
+        for actor in actors['cast']:
+            try:
+                get_actor = Actor.objects.filter(
+                    imdb_id=actor['id'])
+                if(not get_actor):
+                    cast_api = f"https://api.themoviedb.org/3/person/{actor['id']}?api_key={api_key}&language=en-US"
+                    cast_info = requests.get(
+                        cast_api).json()
+                    gender = 0 if cast_info['gender'] == 2 else 1
+                    cast = Actor(name=actor['name'], birthday=cast_info['birthday'], gender=gender, place_of_birth=cast_info[
+                        'place_of_birth'], biography=cast_info['biography'], tmdb_id=actor['id'], imdb_id=cast_info['imdb_id'])
+
+                    cast_poster_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{actor['profile_path']}"
+                    cast_poster = get_tmp_image(
+                        cast_poster_url)
+
+                    cast.profile_pic.save(
+                        f"{actor['name']}.jpg", File(cast_poster), save=True)
+                    cast.save()
+                else:
+                    cast = get_actor[0]
+
+                list_of_actors.append(cast)
+            except Exception as e:
+                print(e)
+
+    return list_of_actors
 
 
 def add_movie():
@@ -152,8 +187,9 @@ def add_movie():
 
                     img_1 = images[0]['file_path'] if len(images) > 0 else ''
                     img_2 = images[1]['file_path'] if len(images) > 1 else ''
-                    img_3 = images[3]['file_path'] if len(images) > 2 else ''
-                    img_4 = images[4]['file_path'] if len(images) > 3 else ''
+                    img_3 = images[2]['file_path'] if len(images) > 2 else ''
+                    img_4 = images[3]['file_path'] if len(images) > 3 else ''
+
                     tmdb_id = movie_info["id"]
                     imdb_id = movie_info["imdb_id"]
                     release_date = search_movie["results"][0]['release_date']
@@ -197,7 +233,9 @@ def add_movie():
                     # # add the movie to the database
                     add_movie = Movie(title=movie_title, imdb_title=title, year=year, catagory=cat, quality=qut,
                                       tagline=tagline, overview=overview, file_path=video_file, file_size=file_size,
-                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, collections=col)
+                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, collections=col,)
+
+                    # add_movie.actors.add(all_actors)
 
                     if(poster):
                         img_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{poster}"
@@ -236,6 +274,9 @@ def add_movie():
                         for genra in genres:
                             get_genres = Genre.objects.get(id=genra['id'])
                             add_movie.genres.add(get_genres)
+
+                    all_actors = actors(tmdb_id)
+                    add_movie.actors.set(all_actors)
 
                     # add_movie.save()
                     print(movie_title)
