@@ -116,7 +116,10 @@ class Movie(models.Model):
 
 
 class Movie_actor_name(models.Model):
-    movie_id = models.ForeignKey(Movie, on_delete=models.SET_NULL, null=True)
-    actor_id = models.ForeignKey(Actor, on_delete=models.SET_NULL, null=True)
+    movie = models.ForeignKey(Movie, on_delete=models.SET_NULL, null=True)
+    actor = models.ForeignKey(Actor, on_delete=models.SET_NULL, null=True)
     character = models.CharField(max_length=250)
-    cast_id = models.IntegerField(blank=True, null=True)
+    cast_num = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.character

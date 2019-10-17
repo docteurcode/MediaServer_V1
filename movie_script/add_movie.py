@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime
 from pathlib import Path
-from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection, Actor
+from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection, Actor, Movie_actor_name
 
 from urllib.request import urlopen
 from django.core.files import File
@@ -55,14 +55,15 @@ def create_collection(collection):
             col.backdrop.save(f"{collection['name']}_backdrop.jpg", File(
                 col_backdrop), save=True)
             col.save()
+
         else:
             col = collection_info[0]
         return col
 
 
-def actors(movie_id):
+def actors(tmdb_id, movie):
     list_of_actors = []
-    actor_api_url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={api_key}"
+    actor_api_url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/credits?api_key={api_key}"
     actors = requests.get(actor_api_url).json()
     cast = ''
     if(actors['cast']):
@@ -89,9 +90,14 @@ def actors(movie_id):
                     cast = get_actor[0]
 
                 list_of_actors.append(cast)
+                # This is going to add Actor name in movie
+                movie_actor = Movie_actor_name(
+                    movie=movie, actor=cast, character=actor['character'], cast_num=actor['order'])
+                movie_actor.save()
             except Exception as e:
                 print(e)
 
+    movie.actors.set(list_of_actors)
     return list_of_actors
 
 
@@ -275,8 +281,8 @@ def add_movie():
                             get_genres = Genre.objects.get(id=genra['id'])
                             add_movie.genres.add(get_genres)
 
-                    all_actors = actors(tmdb_id)
-                    add_movie.actors.set(all_actors)
+                    all_actors = actors(tmdb_id, add_movie)
+                    # add_movie.actors.set(all_actors)
 
                     # add_movie.save()
                     print(movie_title)
