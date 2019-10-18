@@ -57,16 +57,6 @@ class Actor(models.Model):
         return self.name
 
 
-class Trailer(models.Model):
-    key = models.CharField(max_length=50)
-    name = models.CharField(max_length=250)
-    site = models.CharField(max_length=150)
-    trailer_type = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
 class Collection(models.Model):
     tmdb_id = models.IntegerField()
     name = models.CharField(max_length=250)
@@ -105,11 +95,12 @@ class Movie(models.Model):
     is_pub = models.BooleanField(default=True)
     add_date = models.DateTimeField(default=datetime.now)
     # Those are many to many relation
-    genres = models.ManyToManyField(Genre,  blank=True)
     collections = models.ForeignKey(
         Collection,  blank=True, null=True, on_delete=models.SET_NULL)
+    # trailers = models.ForeignKey(
+    #     Trailer,  blank=True, null=True, on_delete=models.CASCADE)
+    genres = models.ManyToManyField(Genre,  blank=True)
     actors = models.ManyToManyField(Actor,  blank=True)
-    trailers = models.ManyToManyField(Trailer,  blank=True)
 
     def __str__(self):
         return self.title
@@ -123,3 +114,15 @@ class Movie_actor_name(models.Model):
 
     def __str__(self):
         return self.character
+
+
+class Trailer(models.Model):
+    movie = models.ForeignKey(
+        Movie,  blank=True, null=True, on_delete=models.SET_NULL)
+    key = models.CharField(max_length=50)
+    name = models.CharField(max_length=250)
+    site = models.CharField(max_length=150)
+    trailer_type = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name

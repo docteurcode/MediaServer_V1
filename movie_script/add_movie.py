@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime
 from pathlib import Path
-from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection, Actor, Movie_actor_name
+from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Collection, Actor, Movie_actor_name, Trailer
 
 from urllib.request import urlopen
 from django.core.files import File
@@ -69,8 +69,8 @@ def actors(tmdb_id, movie):
     if(actors['cast']):
         for actor in actors['cast']:
             try:
-                get_actor = Actor.objects.filter(
-                    imdb_id=actor['id'])
+                get_actor = Actor.objects.get(
+                    tmdb_id=actor['id'])
                 if(not get_actor):
                     cast_api = f"https://api.themoviedb.org/3/person/{actor['id']}?api_key={api_key}&language=en-US"
                     cast_info = requests.get(
@@ -86,18 +86,20 @@ def actors(tmdb_id, movie):
                     cast.profile_pic.save(
                         f"{actor['name']}.jpg", File(cast_poster), save=True)
                     cast.save()
+                    list_of_actors.append(cast)
                 else:
-                    cast = get_actor[0]
-
-                list_of_actors.append(cast)
+                    cast = get_actor
+                    list_of_actors.append(cast)
                 # This is going to add Actor name in movie
                 movie_actor = Movie_actor_name(
                     movie=movie, actor=cast, character=actor['character'], cast_num=actor['order'])
                 movie_actor.save()
+
             except Exception as e:
                 print(e)
 
-    movie.actors.set(list_of_actors)
+    # print(list_of_actors)
+    # movie.actors.se(list_of_actors)
     return list_of_actors
 
 
@@ -281,8 +283,19 @@ def add_movie():
                             get_genres = Genre.objects.get(id=genra['id'])
                             add_movie.genres.add(get_genres)
 
-                    all_actors = actors(tmdb_id, add_movie)
-                    # add_movie.actors.set(all_actors)
+                    actors_list = actors(tmdb_id, add_movie)
+                    add_movie.actors.set(actors_list)
+
+                    def add_trailer(tmdb_id, movie):
+                        trailer_api_url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/videos?api_key={api_key}&language=en-US"
+                        trailers = requests.get(
+                            trailer_api_url).json()['results']
+                        if(trailers):
+                            for trailer in trailers:
+                                trailer_db = Trailer(
+                                    movie=movie, key=trailer['key'], name=trailer['name'], site=trailer['site'], trailer_type=trailer['type'])
+                                trailer_db.save()
+                    add_trailer(tmdb_id, add_movie)
 
                     # add_movie.save()
                     print(movie_title)
