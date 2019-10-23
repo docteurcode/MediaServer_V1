@@ -5,10 +5,11 @@ from datetime import datetime
 from pathlib import Path
 from django.core.files import File
 
-from movie.models import Movie, Year, Movie_Category, Qualitie, Genre, Trailer
+from movie.models import Movie, Year, Movie_Category, Genre, Trailer
 from movie_script.movie_components.add_actors import actors
 from movie_components.collection import create_collection
 from movie_components.trailer import add_trailer
+from movie_components.quality import get_or_add_quality
 from movie_components.common import get_tmp_image, inside_folders, get_file
 from base import conf_data
 
@@ -73,18 +74,22 @@ def add_movie():
                 if(not video_file == movie.file_path):
                     # Delete the old video file
                     old_video_file = f"{get_root_file(video_full_path)}{movie.file_path}"
-                    Path(old_video_file).unlink()
+                    if(Path(old_video_file).exists()):
+                        Path(old_video_file).unlink()
 
                     if(movie.subtitle):
                         # Delete the old subtitle and if new update movie dont have any then set it null
                         old_sub_file = f"{get_root_file(video_full_path)}{movie.subtitle}"
-                        Path(old_sub_file).unlink()
+                        if(Path(old_sub_file).exists()):
+                            Path(old_sub_file).unlink()
                         if(sub_file == movie.subtitle):
                             sub_file = ""
 
                     # Update the path
                     movie.file_path = video_file
                     movie.subtitle = sub_file
+                    movie.quality = get_or_add_quality(qulity)
+                    movie.file_size = file_size
                     movie.add_date = datetime.now()
                     movie.save()
 
@@ -106,6 +111,8 @@ def add_movie():
                     overview = movie_info['overview']
                     poster = movie_info['poster_path']
                     backdrop = movie_info['backdrop_path']
+                    vote_count = movie_info['vote_count']
+                    vote_average = movie_info['vote_average']
 
                     img_1 = images[0]['file_path'] if len(images) > 0 else ''
                     img_2 = images[1]['file_path'] if len(images) > 1 else ''
@@ -135,13 +142,7 @@ def add_movie():
                         cat = cat_query[0]
 
                     # Get the Qulity
-                    qut_query = Qualitie.objects.filter(title=qulity)
-                    qut = ''
-                    if(not qut_query):
-                        qut = Qualitie(title=qulity)
-                        qut.save()
-                    else:
-                        qut = qut_query[0]
+                    qut = get_or_add_quality(qulity)
 
                     # Get the Collections
                     col = create_collection(collection)
@@ -149,7 +150,8 @@ def add_movie():
                     # # add the movie to the database
                     add_movie = Movie(title=movie_title, imdb_title=title, year=year, catagory=cat, quality=qut,
                                       tagline=tagline, overview=overview, file_path=video_file, file_size=file_size,
-                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date, collections=col,)
+                                      subtitle=sub_file,  tmdb_id=tmdb_id, imdb_id=imdb_id, release_date=release_date,
+                                      collections=col, vote_average=vote_average, vote_count=vote_count)
 
                     if(poster):
                         img_url = f"https://image.tmdb.org/t/p/w300_and_h450_bestv2{poster}"

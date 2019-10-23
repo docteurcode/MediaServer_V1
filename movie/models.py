@@ -91,14 +91,14 @@ class Movie(models.Model):
     tmdb_id = models.IntegerField(blank=True)
     imdb_id = models.CharField(max_length=10, blank=True)
     release_date = models.DateField(blank=True)
+    vote_average = models.DecimalField(
+        max_digits=2, decimal_places=1, blank=True, default=0)
+    vote_count = models.IntegerField(blank=True, default=0)
     views = models.IntegerField(default=0)
     is_pub = models.BooleanField(default=True)
     add_date = models.DateTimeField(default=datetime.now)
-    # Those are many to many relation
     collections = models.ForeignKey(
         Collection,  blank=True, null=True, on_delete=models.SET_NULL)
-    # trailers = models.ForeignKey(
-    #     Trailer,  blank=True, null=True, on_delete=models.CASCADE)
     genres = models.ManyToManyField(Genre,  blank=True)
     actors = models.ManyToManyField(Actor,  blank=True)
 
