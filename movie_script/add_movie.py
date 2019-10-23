@@ -197,7 +197,7 @@ def add_movie():
                     add_trailer(tmdb_id, add_movie)
 
                     add_movie.save()
-                    print(movie_title)
+                    # print(movie_title)
 
 
 add_movie()
