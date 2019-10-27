@@ -28,7 +28,15 @@ def add_tv():
                 for each_season in seasons:
                     abl_seasons = Season.objects.filter(tv=abl_tv_show[0].id)
                     if(abl_seasons):
-                        pass
+                        episodes = inside_folders(each_season)
+                        abl_episodes = Episode.objects.filter(
+                            season=abl_seasons[0].id)
+                        # print(len(abl_episodes))
+                        # print(len(episodes))
+                        if(len(episodes) > len(abl_episodes)):
+                            add_episoded_list = episodes[len(abl_episodes):]
+                            print(add_episoded_list)
+                            add_episodes(add_episoded_list, abl_seasons[0])
                     else:
                         season = add_season(abl_tv_show, each_season)
                         episodes = inside_folders(each_season)
