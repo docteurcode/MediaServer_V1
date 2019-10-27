@@ -16,6 +16,7 @@ class TV(models.Model):
     title = models.CharField(max_length=350)
     year = models.IntegerField()
     tmdb_title = models.CharField(max_length=350, blank=True)
+    tv_path = models.CharField(max_length=350)
     catagory = models.ForeignKey(
         Catagory, on_delete=models.SET_NULL, null=True)
     overview = models.TextField(blank=True)

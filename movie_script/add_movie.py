@@ -10,7 +10,7 @@ from movie_script.movie_components.add_actors import actors
 from movie_components.collection import create_collection
 from movie_components.trailer import add_trailer
 from movie_components.quality import get_or_add_quality
-from movie_components.common import get_tmp_image, inside_folders, get_file
+from common import get_tmp_image, inside_folders, get_file
 from base import conf_data
 
 
