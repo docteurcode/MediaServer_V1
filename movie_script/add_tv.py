@@ -27,16 +27,23 @@ def add_tv():
                 seasons = inside_folders(each_tv_show)
                 for each_season in seasons:
                     abl_seasons = Season.objects.filter(tv=abl_tv_show[0].id)
+
                     if(abl_seasons):
                         episodes = inside_folders(each_season)
                         abl_episodes = Episode.objects.filter(
                             season=abl_seasons[0].id)
-                        # print(len(abl_episodes))
-                        # print(len(episodes))
+
                         if(len(episodes) > len(abl_episodes)):
-                            add_episoded_list = episodes[len(abl_episodes):]
-                            print(add_episoded_list)
-                            add_episodes(add_episoded_list, abl_seasons[0])
+                            # Those episode path get from Database
+                            episode_paths = [
+                                db_episode.file_path for db_episode in abl_episodes]
+
+                            # Go to each episode and check is that episode added or not
+                            for episode in episodes:
+                                episode_file = str(episode).replace(
+                                    "\\", "/").split("/")[-1]
+                                if episode_file not in episode_paths:
+                                    add_episodes([episode], abl_seasons[0])
                     else:
                         season = add_season(abl_tv_show, each_season)
                         episodes = inside_folders(each_season)
