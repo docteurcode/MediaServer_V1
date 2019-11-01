@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'movie.apps.MovieConfig',
     'tv.apps.TvConfig',
+    'liveTV.apps.LivetvConfig',
 ]
 
 MIDDLEWARE = [
