@@ -17,4 +17,4 @@ class CatagoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Channel, ChannelAdmin)
-admin.site.register(Catagory, CatagoryAdmin)
+admin.site.register(Catagory)
