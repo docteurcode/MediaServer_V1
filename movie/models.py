@@ -126,3 +126,13 @@ class Trailer(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Mojaloss(models.Model):
+
+    title = models.CharField(max_length=350)
+    year = models.IntegerField()
+    path = models.CharField(max_length=700)
+
+    def __str__(self):
+        return self.title

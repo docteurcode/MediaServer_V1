@@ -1,10 +1,25 @@
 {
     "api_key": "c5f91272e8db79e3deb27701f18d2894",
+    "headers": {
+        "user_agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Mobile Safari/537.36"
+    },
+    "login_url": "https://mojaloss.net/wp-login.php",
+    "login_data": {
+        "log": "uid2348",
+        "pwd": "ab2348",
+        "rememberme": "forever",
+        "redirect_to": "https://mojaloss.net",
+        "redirect_to_automatic": "1"
+    },
+    "home_url": "https://mojaloss.net/",
+    "tv_show_url": "https://mojaloss.net/category/tv-shows/",
     "project_dir": "D:/Python/Project/Django/MediaServer_V1",
     "renamed_tv_paths": [
         "D:/Python/Project/Auto Movie V2/Renamed/TV"
     ],
     "renamed_movie_paths": [
         "D:/Python/Project/Auto Movie V2/Renamed/Movies"
-    ]
+    ],
+    "download_tv_path": "D:/Python/Project/Auto Movie V2/TV",
+    "download_movie_path": "D:/Python/Project/Auto Movie V2/Movies"
 }
