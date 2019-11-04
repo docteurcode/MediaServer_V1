@@ -19,6 +19,11 @@ class ActorAdmin(admin.ModelAdmin):
     list_per_page = 30
 
 
+class MojalossAdmin(admin.ModelAdmin):
+    list_display = ('title', 'year', 'path')
+    list_per_page = 25
+
+
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(Year)
 admin.site.register(Movie_Category)
@@ -28,3 +33,4 @@ admin.site.register(Trailer)
 admin.site.register(Collection)
 admin.site.register(Actor)
 admin.site.register(Movie_actor_name)
+admin.site.register(Mojaloss, MojalossAdmin)
