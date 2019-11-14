@@ -35,9 +35,9 @@ with requests.Session() as s:
         name = dirname+filename
         try:
             print(f"Now Downloading: {filename}\n")
-            # with s.get(url, stream=True) as file:
-            #     with open(name, 'wb') as f:
-            #         shutil.copyfileobj(file.raw, f)
+            with s.get(url, stream=True) as file:
+                with open(name, 'wb') as f:
+                    shutil.copyfileobj(file.raw, f)
         except Exception as e:
             print(e)
             # # if any Error happed then this function try again to download the file
@@ -93,8 +93,8 @@ with requests.Session() as s:
     except:
         print("Problem on scriping the home page main.py")
 
-    if(len(english_movies)):
-        get_movies(english_movies, scraping, "English", download_file)
+    # if(len(english_movies)):
+    #     get_movies(english_movies, scraping, "English", download_file)
     # if(len(hindi_movies)):
     #     get_movies(hindi_movies, scraping, "Hindi", download_file)
 
@@ -122,7 +122,6 @@ with requests.Session() as s:
     except:
         print("Problem on scriping the tv show page main.py")
 
-
     if(len(english_tv_shows)):
-        get_tv_shows(english_tv_shows, scraping,
+        get_tv_shows([english_tv_shows[0]], scraping,
                      download_file, "English", login)

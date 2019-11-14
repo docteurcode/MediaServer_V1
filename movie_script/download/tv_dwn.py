@@ -4,7 +4,9 @@ import time
 import json
 from pathlib import Path
 
-from tv.models import TV, Season
+from tv.models import TV, Season, Episode
+
+from movie_script.download.episode_dwn import episode
 
 from movie_script.base import conf_data
 
@@ -46,46 +48,52 @@ def get_tv_shows(tv_shows_url, scraping, download, catagory, login):
                     seasons_name.append(
                         seasons_soup[i].a.text.replace("/", ""))
 
-        #         # each_tv_info = {'title': tv_title, 'year': tv_year,
-        #         #                 'url': tv_url, 'download_link': tv_download_link, "seasons": seasons_name}
-
                 try:
                     tv = TV.objects.filter(title=tmdb_title, year=tv_year)
 
                     # if the movie abailable in the database
                     if(tv):
-                        print(tv[0].id)
-                        seasons = Season.objects.filter(id=tv[0].id)
-                        print(seasons)
 
-                    #     # if it has any season then it work
-                    #     if(len(seasons_available)):
-                    #         season_id = seasons_available[-1][0]
-                    #         seasons = seasons_name[len(
-                    #             seasons_available) - 1:]
-                    #         check_season = [seasons[0]]
+                        seasons = Season.objects.filter(tv=tv[0])
 
-                    #         episode_query = f"SELECT episode_id, episode_name FROM tv_episodes WHERE season_id={season_id}"
-                    #         db.execute(episode_query)
-                    #         episodes = db.fetchall()
-                    #         episode_down_from = len(episodes) + 1
-                    #         print(f"{episode_down_from} and {check_season}")
+                        if(len(seasons_name) == len(seasons)):
 
-                    # #         # Download the episodes that not given
-                    # #         episode(check_season, tv_year, tv_title,
-                    # #                 tv_download_link, scraping, episode_down_from, catagory, download)
+                            episodes = Episode.objects.filter(
+                                season=seasons[len(seasons) - 1])
+                            print(episodes)
+                            episode_down_from = len(episodes)
 
-                    # #         # if the more then 1 seasons not download then
-                    # #         if(len(seasons) > 1):
-                    # #             full_down_seasons = seasons[1:]
+                            download_season = seasons_name[len(seasons) - 1]
 
-                    # #             episode(full_down_seasons, tv_year,
-                    # #                     tv_title, tv_download_link, scraping, 0, catagory, download)
+                            # Download the episodes that not given
+                            episode(download_season, tv_year, tv_title,
+                                    tv_download_link, scraping, episode_down_from, catagory, download)
 
-                    # if tv show not available in database then we download all the files
-                    # else:
-                    #     episode(seasons_name, tv_year, tv_title,
-                    #             tv_download_link, scraping, 0, catagory, download)
+                        elif (len(seasons_name) - len(seasons) >= 1):
+                            # Here we take all the season those are not added and half added
+                            not_add_season = seasons_name[len(seasons) - 2:]
 
-                except:
+                            # This one is repeted Fix it
+                            episodes = Episode.objects.fitler(
+                                season=seasons[-1])
+                            episode_down_from = len(episodes)
+
+                            # We Convert it to the array because episode take array of seasons
+                            download_season = [not_add_season[0]]
+
+                            # We use this episode for dowbload those episode of the seasons that are not added
+                            episode(download_season, tv_year, tv_title,
+                                    tv_download_link, scraping, episode_down_from, catagory, download)
+
+                            # Here we download episode of those seasons that are not added to the database
+                            episode(not_add_season[1:], tv_year, tv_title,
+                                    tv_download_link, scraping, 0, catagory, download)
+
+                    else:
+                        # if tv show not available in database then we download all the files
+                        episode(seasons_name, tv_year, tv_title,
+                                tv_download_link, scraping, 0, catagory, download)
+
+                except Exception as e:
                     print(f"Error for: {tv_title}")
+                    print(e)
