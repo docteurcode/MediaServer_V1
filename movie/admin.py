@@ -24,6 +24,12 @@ class MojalossAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
+class NeedToDownloadAdmin(admin.ModelAdmin):
+    list_display = ('title', 'year', 'url', "done")
+    list_per_page = 30
+    search_fields = ('title', 'year', 'url')
+
+
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(Year)
 admin.site.register(Movie_Category)
@@ -34,3 +40,5 @@ admin.site.register(Collection)
 admin.site.register(Actor)
 admin.site.register(Movie_actor_name)
 admin.site.register(Mojaloss, MojalossAdmin)
+# This one for mojaloss direct link given movies
+admin.site.register(NeedToDownload, NeedToDownloadAdmin)

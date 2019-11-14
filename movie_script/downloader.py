@@ -122,7 +122,7 @@ with requests.Session() as s:
     except:
         print("Problem on scriping the tv show page main.py")
 
-    # print(english_tv_shows)
+
     if(len(english_tv_shows)):
         get_tv_shows(english_tv_shows, scraping,
                      download_file, "English", login)

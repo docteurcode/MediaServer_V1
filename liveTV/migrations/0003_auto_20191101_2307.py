@@ -10,13 +10,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='Catagory',
-            new_name='Category',
-        ),
-        migrations.RenameField(
-            model_name='channel',
-            old_name='caragory',
-            new_name='category',
-        ),
+        # migrations.RenameModel(
+        #     old_name='Catagory',
+        #     new_name='Catagory',
+        # ),
+        # migrations.RenameField(
+        #     model_name='channel',
+        #     old_name='caragory',
+        #     new_name='caragory',
+        # ),
     ]
